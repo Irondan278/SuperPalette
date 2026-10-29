@@ -76,6 +76,19 @@ To remove it again:
 Get-AppxPackage irondan.SuperPalette | Remove-AppxPackage
 ```
 
+## Building for the Microsoft Store
+
+```powershell
+.\TaskImporterExtension\build-store.ps1
+```
+
+Builds unsigned Release packages for x64 and ARM64 and bundles them into
+`TaskImporterExtension\AppPackages\SuperPalette_<version>.msixbundle`, which is
+what gets uploaded to Partner Center. The Store signs it. No Visual Studio is
+involved, but the Windows SDK 10.0.26100 must be installed for `makeappx`.
+Bump the version in both `Package.appxmanifest` and the csproj's
+`AppxPackageVersion` before each submission; the script refuses a mismatch.
+
 ## Using it
 
 Three commands appear in the palette:

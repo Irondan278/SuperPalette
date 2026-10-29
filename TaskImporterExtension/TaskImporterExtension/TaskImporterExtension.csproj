@@ -58,6 +58,16 @@
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
     <PackageReference Include="Shmuelie.WinRTServer" />
 
+    <!--
+      Supplies makepri, makeappx and signtool, and points the MSIX targets at
+      them. Without it they look the tools up through the installed SDK's
+      Platforms\UAP\<ver>\UAP.props, which the standalone SDK installer does not
+      lay down, and packaging fails with APPX3217 outside Visual Studio.
+    -->
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+
     <!-- Needed to enable building an MSIX package -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">
       <PrivateAssets>all</PrivateAssets>

@@ -108,7 +108,9 @@ Three things must be installed, and the third is easy to miss:
   build fails with "Could not find the Windows SDK in the registry". No NuGet
   package substitutes for it, and winget has no 10.0.26100 package — use the
   installer from the Windows SDK archive. The version must match
-  `TargetPlatformVersion` in the csproj.
+  `TargetPlatformVersion` in the csproj. The only feature needed is
+  **Windows SDK for UWP Managed Apps**; the **Windows App Certification Kit**
+  is worth adding to run the Store's checks locally.
 
 ```powershell
 # fast loop — about a second, no network, no Super Productivity
@@ -135,6 +137,14 @@ platforms it declares.
 - **MSIX packaging works under `dotnet build`.** This was the main unproven
   assumption. No Visual Studio MSBuild is needed; `AppxManifest.xml` lands in
   the output folder and `Add-AppxPackage -Register` takes it.
+- **The Store bundle builds without Visual Studio too.**
+  `TaskImporterExtension\build-store.ps1` builds unsigned Release MSIX for x64
+  and ARM64 and bundles them with `makeappx` into `AppPackages\`. It depends on
+  the `Microsoft.Windows.SDK.BuildTools` package reference: without it the MSIX
+  targets look for makepri via `Platforms\UAP\<ver>\UAP.props`, which the
+  standalone SDK installer does not provide, and packaging fails with
+  APPX3217. The `mspdbcmf.exe` warning only means no symbols package; upload
+  the `.msixbundle`.
 - The extension project is not in the solution file. It builds by path.
 
 ## Next steps, in order
@@ -148,11 +158,8 @@ platforms it declares.
    from Microsoft's docs (`LocalServer32`, not the template skill's
    `InprocServer32`), and never alongside the Store build on one machine.
    Before submitting:
-   - Install the Windows SDK 10.0.26100 on whichever machine builds the
-     Store package; the work laptop has never built the extension.
-   - Prove `dotnet build -c Release -p:GenerateAppxPackageOnBuild=true
-     -p:AppxPackageSigningEnabled=false` yields an `.msix` with no Visual
-     Studio, for x64 and ARM64, then `makeappx bundle`. The Store signs it.
+   - Run the trimmed Release build against a live Super Productivity. Tests
+     cover JSON with reflection off, but nothing has run the trimmed package.
    - Real icons (the Assets are template placeholders), a privacy policy URL,
      a `runFullTrust` justification, and certification notes saying PowerToys
      with Command Palette is required.
