@@ -87,6 +87,10 @@ The two libraries stay outside that folder, so they do not inherit it.
   must be listed in `Models/ApiJsonContext.cs`. The test project runs with
   reflection off too, so a missing entry fails the test loop, and both
   libraries set `IsAotCompatible` so the analyzers warn about trim hazards.
+- **`PRIVACY.md` is the Store listing's privacy policy** and states exactly
+  what is stored, what is sent where, and when the clipboard is read. Any
+  change to settings, network calls or clipboard use must update it in the
+  same commit.
 - Unresolvable `#tags` and `+projects` stay in the title and are reported.
   Tags **cannot** be created through the API, so silently dropping one would be
   the wrong failure.
@@ -160,8 +164,8 @@ platforms it declares.
    Before submitting:
    - Run the trimmed Release build against a live Super Productivity. Tests
      cover JSON with reflection off, but nothing has run the trimmed package.
-   - Real icons (the Assets are template placeholders), a privacy policy URL,
-     a `runFullTrust` justification, and certification notes saying PowerToys
+   - Real icons (the Assets are template placeholders), a `runFullTrust`
+     justification, and certification notes saying PowerToys
      with Command Palette is required.
 
 ## Known unknowns

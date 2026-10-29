@@ -180,6 +180,12 @@ The contract that matters: anything the user typed is marked in
 `TaskDraft.ExplicitFields`, and routers leave those alone. Rules fill gaps
 rather than argue with the typist.
 
+## Privacy
+
+Super Palette collects nothing. It stores its settings locally, talks to
+Super Productivity's local API, and fetches link titles from the linked site
+when that setting is on. See [PRIVACY.md](PRIVACY.md).
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Parts of `TaskImporterExtension/` come from
