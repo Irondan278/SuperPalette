@@ -14,11 +14,11 @@ Super Productivity plugin is involved.
 | --- | --- |
 | `src/TaskImporter.Core` | Written and tested — parser, link handling, routing seam |
 | `src/TaskImporter.SuperProductivity` | Written — REST client, reference cache |
-| `tests/TaskImporter.Core.Tests` | 96 tests, all passing |
-| `TaskImporterExtension/` | Builds clean, registers locally — Add task, Capture clipboard, Current task |
+| `tests/TaskImporter.Core.Tests` | 106 tests, all passing |
+| `TaskImporterExtension/` | Builds clean, registers locally — Add task, Capture clipboard, Current task, and a dock band |
 
-Still to do: the dock band, and a live run against a real Super Productivity
-instance to confirm how `dueWithTime` is encoded.
+Still to do: a live run against a real Super Productivity instance to confirm
+how `dueWithTime` is encoded, and a check of the dock band in a live Dock.
 
 ## Before anything else
 
@@ -86,10 +86,17 @@ Three commands appear in the palette:
 | **Capture clipboard** | Opens the quick-add line pre-filled from the clipboard, so you can add a tag or a due date before it goes. |
 | **Current task** | What the timer is on, plus today's list. Enter starts or stops; Ctrl+K offers Complete. |
 
+One dock band, **Top task**, shows the running task — or the first open task on
+today's list — with time spent against the estimate and a start / stop button.
+It polls Super Productivity every 30 seconds and counts a running timer forward
+in between.
+
 Settings — access token, API address, default project, and whether to fetch page
-titles — live on the extension's settings page, and persist to
-`%LOCALAPPDATA%\TaskImporter\settings.json` rather than inside the package, so
-rebuilding does not lose the token.
+titles — live on the extension's settings page. MSIX redirects them into the
+package's data folder,
+`%LOCALAPPDATA%\Packages\TaskImporterExtension_ajkqh9gttjjec\LocalCache\Local\TaskImporter`,
+so rebuilding and re-registering keep the token but `Remove-AppxPackage`
+deletes it.
 
 ## Quick-add syntax
 
@@ -123,6 +130,7 @@ src/
     Clipboard/HtmlClipboardParser.cs CF_HTML anchor extraction
     Enrichment/PageTitleEnricher.cs  fetches a page and reads its title
     Routing/ITaskRouter.cs           the seam future rules plug into
+    Timing/TimeProgress.cs           time spent / estimate, formatted
   TaskImporter.SuperProductivity/
     SuperProductivityClient.cs       the REST client
     ReferenceCache.cs                projects and tags, 60s TTL, never blocks
@@ -137,6 +145,7 @@ TaskImporterExtension/               the packaged extension (template's layout)
     Services/Sync.cs                 async work from a synchronous Invoke
     Pages/AddTaskPage.cs             the quick-add line
     Pages/CurrentTaskPage.cs         the timer and today's list
+    Dock/TopTaskBand.cs              the dock band
     Commands/                        submit, capture, start / stop / complete
 ```
 
@@ -157,3 +166,8 @@ pipeline.
 The contract that matters: anything the user typed is marked in
 `TaskDraft.ExplicitFields`, and routers leave those alone. Rules fill gaps
 rather than argue with the typist.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Parts of `TaskImporterExtension/` come from
+Microsoft's Command Palette extension template, also MIT.

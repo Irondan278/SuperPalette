@@ -57,10 +57,15 @@ The two libraries stay outside that folder, so they do not inherit it.
   with the same COM class.
 - **Settings live inside the package's data folder**, not plain
   `%LOCALAPPDATA%`: MSIX redirects it to
-  `%LOCALAPPDATA%\Packages\TaskImporterExtension_8wekyb3d8bbwe\LocalCache\Local\TaskImporter`.
+  `%LOCALAPPDATA%\Packages\TaskImporterExtension_ajkqh9gttjjec\LocalCache\Local\TaskImporter`.
   Re-registering keeps them; `Remove-AppxPackage` deletes them, token included.
   Changing the manifest makes plain re-registration fail with 0x80073CFB, so
   either remove the package (and re-enter the token) or bump `Version`.
+- **Publisher is `CN=Danny Enns`**, which gives the `_ajkqh9gttjjec` suffix
+  above. Leave it alone: it is part of the package identity, so changing it
+  moves the settings folder and registers a second package with the same COM
+  class unless the old one is removed first. A signing certificate, when one
+  is needed, must carry exactly this subject.
 
 ## Conventions that matter
 
@@ -130,9 +135,6 @@ platforms it declares.
 1. Verify against a live instance — see "Known unknowns" below.
 2. Check the dock band in a live Dock: rendering, click behaviour, and
    whether `timeSpent` drifts against Super Productivity's own display.
-3. Change `Publisher` in `Package.appxmanifest`. It still says
-   `CN=Microsoft Corporation`, which is the template's placeholder. Inert for
-   local registration, wrong for anything else.
 
 ## Known unknowns
 
