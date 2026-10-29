@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The REST client. System.Text.Json and System.Net.Http.Json are both in the
+    shared framework, so this project needs no NuGet packages at all.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework Condition="'$(TaskImporterTfm)' != ''">$(TaskImporterTfm)</TargetFramework>
+    <TargetFramework Condition="'$(TaskImporterTfm)' == ''">net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>TaskImporter.SuperProductivity</RootNamespace>
+    <AssemblyName>TaskImporter.SuperProductivity</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TaskImporter.Core\TaskImporter.Core.csproj" />
+  </ItemGroup>
+
+</Project>

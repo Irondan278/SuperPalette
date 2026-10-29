@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Deliberately free of any Windows or Command Palette dependency: this project
+    holds the parsing, link handling and routing logic, and it must stay
+    testable in two seconds without deploying a package.
+
+    There is no Directory.Build.props on purpose. The Command Palette template
+    writes one of its own at the repo root, and a second copy fighting with it
+    is a bad first day. Override TaskImporterTfm on the command line to build
+    against a different SDK.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework Condition="'$(TaskImporterTfm)' != ''">$(TaskImporterTfm)</TargetFramework>
+    <TargetFramework Condition="'$(TaskImporterTfm)' == ''">net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>TaskImporter.Core</RootNamespace>
+    <AssemblyName>TaskImporter.Core</AssemblyName>
+  </PropertyGroup>
+
+</Project>

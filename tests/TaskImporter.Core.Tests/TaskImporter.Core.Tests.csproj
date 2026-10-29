@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    A plain console runner rather than xunit. Two reasons: no NuGet
+    dependencies, so it runs on a machine that has never restored anything; and
+    the whole suite finishes in well under a second, which is the point of
+    keeping this logic out of the packaged extension.
+
+    Run it from the repo root with "dotnet run" against this project file.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework Condition="'$(TaskImporterTfm)' != ''">$(TaskImporterTfm)</TargetFramework>
+    <TargetFramework Condition="'$(TaskImporterTfm)' == ''">net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TaskImporter.Core.Tests</RootNamespace>
+    <AssemblyName>TaskImporter.Core.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TaskImporter.Core\TaskImporter.Core.csproj" />
+    <ProjectReference Include="..\..\src\TaskImporter.SuperProductivity\TaskImporter.SuperProductivity.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "TaskImporterExtension (Package)": {
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
+    },
+    "TaskImporterExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

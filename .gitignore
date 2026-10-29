@@ -1,0 +1,27 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+
+# Build output and packages
+AppPackages/
+Packages/
+*.msix
+*.appx
+*.appxbundle
+*.cer
+*.pfx
+
+# Settings written at runtime hold the Super Productivity access token.
+settings.json
+taskimporter.settings.json
+
+# Windows App SDK deployment needs these, so they are NOT ignored:
+#   **/Properties/launchSettings.json
+#   **/Properties/PublishProfiles/*.pubxml
+# Losing them produces confusing deployment failures.
+
+# Per-machine Claude Code settings
+.claude/settings.local.json
