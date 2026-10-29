@@ -14,7 +14,7 @@ Super Productivity plugin is involved.
 | --- | --- |
 | `src/TaskImporter.Core` | Written and tested — parser, link handling, routing seam |
 | `src/TaskImporter.SuperProductivity` | Written — REST client, reference cache |
-| `tests/TaskImporter.Core.Tests` | 106 tests, all passing |
+| `tests/TaskImporter.Core.Tests` | 114 tests, all passing |
 | `TaskImporterExtension/` | Builds clean, registers locally — Add task, Capture clipboard, Current task, and a dock band |
 
 Still to do: a live run against a real Super Productivity instance to confirm

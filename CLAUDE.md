@@ -16,7 +16,7 @@ only; the API is off by default. Every response is
 
 ## Current state
 
-Built, compiled and tested (106 tests passing):
+Built, compiled and tested (114 tests passing):
 
 - `src/TaskImporter.Core` — quick-add parser, date and duration grammars,
   CF_HTML clipboard parsing, page-title extraction, the routing seam,
@@ -80,7 +80,13 @@ The two libraries stay outside that folder, so they do not inherit it.
   writes its own; each project here carries its own settings instead. Override
   `TaskImporterTfm` on the command line to build against another SDK.
 - Tests are a plain console app, not xunit, so they need no restore. Add cases
-  to `tests/TaskImporter.Core.Tests/Program.cs`.
+  to `tests/TaskImporter.Core.Tests/Program.cs`. The "wire" suite drives the
+  real client through `FakeApi`, a fake `HttpMessageHandler`.
+- **JSON is source-generated.** The extension ships trimmed, which turns off
+  reflection-based `System.Text.Json`. Any type the client reads or writes
+  must be listed in `Models/ApiJsonContext.cs`. The test project runs with
+  reflection off too, so a missing entry fails the test loop, and both
+  libraries set `IsAotCompatible` so the analyzers warn about trim hazards.
 - Unresolvable `#tags` and `+projects` stay in the title and are reported.
   Tags **cannot** be created through the API, so silently dropping one would be
   the wrong failure.
@@ -142,9 +148,8 @@ platforms it declares.
    from Microsoft's docs (`LocalServer32`, not the template skill's
    `InprocServer32`), and never alongside the Store build on one machine.
    Before submitting:
-   - Make JSON source-generated. Release builds set `PublishTrimmed`, which
-     turns off reflection-based `System.Text.Json`, and `SuperProductivityClient`
-     uses it. Debug builds hide this.
+   - Install the Windows SDK 10.0.26100 on whichever machine builds the
+     Store package; the work laptop has never built the extension.
    - Prove `dotnet build -c Release -p:GenerateAppxPackageOnBuild=true
      -p:AppxPackageSigningEnabled=false` yields an `.msix` with no Visual
      Studio, for x64 and ARM64, then `makeappx bundle`. The Store signs it.

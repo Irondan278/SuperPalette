@@ -18,6 +18,13 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>TaskImporter.Core.Tests</RootNamespace>
     <AssemblyName>TaskImporter.Core.Tests</AssemblyName>
+
+    <!--
+      A trimmed Release build of the extension switches reflection-based
+      System.Text.Json off. Switching it off here too means a type missing from
+      ApiJsonContext fails in this loop, not only in the Store package.
+    -->
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <ItemGroup>

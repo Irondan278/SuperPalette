@@ -46,6 +46,7 @@ public static class Program
         failures += DraftTests();
         failures += RoutingTests();
         failures += RequestTests();
+        failures += WireTests();
         failures += TimingTests();
 
         Console.WriteLine();
@@ -683,6 +684,124 @@ public static class Program
         return t.Report("requests");
 
         static TaskImporter.SuperProductivity.Models.TaskDto Task(string id) => new() { Id = id, Title = id };
+    }
+
+    /// <summary>
+    /// The client's JSON, end to end, against a fake API. The test project turns
+    /// reflection-based System.Text.Json off, as a trimmed Release build does, so
+    /// a type missing from the source-generated context fails here rather than
+    /// in the Store build.
+    /// </summary>
+    private static int WireTests()
+    {
+        var t = new TestRunner();
+        var parser = NewParser();
+
+        static SuperProductivityClient Client(FakeApi api)
+            => new(new SuperProductivityOptions { AccessToken = "test-token" }, new System.Net.Http.HttpClient(api));
+
+        static T Wait<T>(System.Threading.Tasks.Task<T> task) => task.GetAwaiter().GetResult();
+
+        t.Test("creating a task sends camelCase and omits empty fields", () =>
+        {
+            var api = new FakeApi().On("POST /tasks",
+                """{"ok":true,"data":{"id":"new-1","title":"Replace UPS batteries","timeEstimate":2700000}}""");
+            using var client = Client(api);
+
+            var draft = DraftFactory.Build(DraftFactory.Capture("Replace UPS batteries +Acme IT 45m", parser));
+            var created = Wait(client.CreateTaskAsync(draft));
+
+            t.AreEqual("new-1", created.Id);
+            t.AreEqual(2_700_000L, created.TimeEstimate);
+            t.AreEqual(
+                """{"title":"Replace UPS batteries","projectId":"p-acme","timeEstimate":2700000}""",
+                api.Requests[0].Body);
+        });
+
+        t.Test("completing a task sends only isDone", () =>
+        {
+            var api = new FakeApi().On("PATCH /tasks/a%2Fb",
+                """{"ok":true,"data":{"id":"a/b","title":"x","isDone":true}}""");
+            using var client = Client(api);
+
+            var done = Wait(client.CompleteTaskAsync("a/b"));
+            t.IsTrue(done.IsDone, "the returned task is done");
+            t.AreEqual("""{"isDone":true}""", api.Requests[0].Body);
+        });
+
+        t.Test("today reads tasks and tags and follows the tag's order", () =>
+        {
+            var api = new FakeApi()
+                .On("GET /tasks?tagId=TODAY",
+                    """{"ok":true,"data":[{"id":"b","title":"B","timeSpent":60000},{"id":"a","title":"A"}]}""")
+                .On("GET /tags",
+                    """{"ok":true,"data":[{"id":"TODAY","title":"Today","taskIds":["a","b"]}]}""");
+            using var client = Client(api);
+
+            var today = Wait(client.GetTodayAsync());
+            t.SequenceEqual(["a", "b"], today.Select(task => task.Id).ToArray());
+            t.AreEqual(60_000L, today[1].TimeSpent);
+        });
+
+        t.Test("projects accept either title or name", () =>
+        {
+            var api = new FakeApi().On("GET /projects",
+                """{"ok":true,"data":[{"id":"p1","title":"Acme IT"},{"id":"p2","name":"Home"}]}""");
+            using var client = Client(api);
+
+            var projects = Wait(client.GetProjectsAsync());
+            t.SequenceEqual(["Acme IT", "Home"], projects.Select(p => p.DisplayName).ToArray());
+        });
+
+        t.Test("no running task comes back as null", () =>
+        {
+            var api = new FakeApi().On("GET /task-control/current", """{"ok":true,"data":null}""");
+            using var client = Client(api);
+            t.IsNull(Wait(client.GetCurrentTaskAsync()), "nothing is running");
+        });
+
+        t.Test("starting and stopping ignore whatever data comes back", () =>
+        {
+            var api = new FakeApi()
+                .On("POST /tasks/t1/start", """{"ok":true,"data":{"started":true}}""")
+                .On("POST /task-control/stop", """{"ok":true}""");
+            using var client = Client(api);
+
+            client.StartTaskAsync("t1").GetAwaiter().GetResult();
+            client.StopCurrentTaskAsync().GetAwaiter().GetResult();
+            t.AreEqual(2, api.Requests.Count);
+        });
+
+        t.Test("an error envelope becomes a fault the palette can explain", () =>
+        {
+            var api = new FakeApi().On("GET /tags",
+                """{"ok":false,"error":{"code":"RENDERER_NOT_READY","message":"starting"}}""",
+                System.Net.HttpStatusCode.ServiceUnavailable);
+            using var client = Client(api);
+
+            try
+            {
+                Wait(client.GetTagsAsync());
+                t.IsTrue(false, "should have thrown");
+            }
+            catch (SuperProductivityException ex)
+            {
+                t.AreEqual(SuperProductivityFault.NotReady, ex.Fault);
+                t.AreEqual("RENDERER_NOT_READY", ex.Code);
+            }
+        });
+
+        t.Test("health is read without a token", () =>
+        {
+            var api = new FakeApi().On("GET /health", """{"ok":true,"data":{"server":"sp","rendererReady":true}}""");
+            using var client = new SuperProductivityClient(new SuperProductivityOptions(), new System.Net.Http.HttpClient(api));
+
+            var health = Wait(client.GetHealthAsync());
+            t.IsNotNull(health, "health parsed");
+            t.IsTrue(health!.RendererReady, "renderer ready");
+        });
+
+        return t.Report("wire");
     }
 
     private static int TimingTests()

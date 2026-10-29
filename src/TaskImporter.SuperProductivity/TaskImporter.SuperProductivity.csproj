@@ -13,6 +13,10 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <RootNamespace>TaskImporter.SuperProductivity</RootNamespace>
     <AssemblyName>TaskImporter.SuperProductivity</AssemblyName>
+
+    <!-- The extension ships trimmed; this turns on the trim and AOT analyzers
+         so code that would break there warns here. -->
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>

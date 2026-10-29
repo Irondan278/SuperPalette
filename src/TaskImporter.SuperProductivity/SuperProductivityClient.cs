@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskImporter.Core;
@@ -22,8 +23,6 @@ namespace TaskImporter.SuperProductivity;
 /// </summary>
 public sealed class SuperProductivityClient : IDisposable
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
-
     private readonly HttpClient _http;
     private readonly bool _ownsHttpClient;
 
@@ -55,7 +54,7 @@ public sealed class SuperProductivityClient : IDisposable
             if (!response.IsSuccessStatusCode) return null;
 
             var envelope = await response.Content
-                .ReadFromJsonAsync<ApiEnvelope<HealthDto>>(JsonOptions, cancellationToken)
+                .ReadFromJsonAsync(ApiJsonContext.Default.ApiEnvelopeHealthDto, cancellationToken)
                 .ConfigureAwait(false);
 
             return envelope?.Ok == true ? envelope.Data : null;
@@ -150,15 +149,17 @@ public sealed class SuperProductivityClient : IDisposable
         }
     }
 
+    // Whatever data start and stop return is not used, so it is read as a raw
+    // JsonElement rather than given a type of its own.
     public Task StartTaskAsync(string taskId, CancellationToken cancellationToken = default)
-        => SendAsync<object?>(
+        => SendAsync<JsonElement>(
             HttpMethod.Post,
             $"tasks/{Uri.EscapeDataString(taskId)}/start",
             null,
             cancellationToken);
 
     public Task StopCurrentTaskAsync(CancellationToken cancellationToken = default)
-        => SendAsync<object?>(HttpMethod.Post, "task-control/stop", null, cancellationToken);
+        => SendAsync<JsonElement>(HttpMethod.Post, "task-control/stop", null, cancellationToken);
 
     // ---- Reference data -------------------------------------------------
 
@@ -216,7 +217,7 @@ public sealed class SuperProductivityClient : IDisposable
 
         if (body is not null)
         {
-            request.Content = JsonContent.Create(body, body.GetType(), options: JsonOptions);
+            request.Content = JsonContent.Create(body, TypeInfo(body.GetType()));
         }
 
         HttpResponseMessage response;
@@ -250,7 +251,7 @@ public sealed class SuperProductivityClient : IDisposable
             try
             {
                 envelope = await response.Content
-                    .ReadFromJsonAsync<ApiEnvelope<T>>(JsonOptions, cancellationToken)
+                    .ReadFromJsonAsync((JsonTypeInfo<ApiEnvelope<T>>)TypeInfo(typeof(ApiEnvelope<T>)), cancellationToken)
                     .ConfigureAwait(false);
             }
             catch (JsonException ex)
@@ -279,6 +280,15 @@ public sealed class SuperProductivityClient : IDisposable
             return envelope.Data!;
         }
     }
+
+    /// <summary>
+    /// Serialization metadata from <see cref="ApiJsonContext"/>. A type missing
+    /// from it is a programming error, so this says which one rather than
+    /// letting System.Text.Json complain about reflection.
+    /// </summary>
+    private static JsonTypeInfo TypeInfo(Type type)
+        => ApiJsonContext.Default.GetTypeInfo(type)
+           ?? throw new InvalidOperationException($"{type} is missing from ApiJsonContext.");
 
     private static SuperProductivityFault MapFault(string? code) => code switch
     {
