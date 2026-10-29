@@ -1,4 +1,4 @@
-# TaskImporter — context for Claude Code
+# Super Palette (TaskImporter) — context for Claude Code
 
 A PowerToys Command Palette extension that captures tasks into Super Productivity.
 Danny is the only developer; solo IT.
@@ -49,6 +49,12 @@ The two libraries stay outside that folder, so they do not inherit it.
   on the first line of the notes.
 - **Routing is deferred** but the seam is built. Do not add a rule engine
   without being asked; do keep `ITaskRouter` intact.
+- **Shown as "Super Palette"**; the code keeps the name TaskImporter. Only
+  display strings changed (manifest `DisplayName`/`Description`, the provider's
+  `DisplayName`, the dock band title). Leave the provider `Id`, the package
+  `Identity Name` and `%LOCALAPPDATA%\TaskImporter` alone: changing them loses
+  the pinned band or the saved token, or registers a second package with the
+  same COM class.
 
 ## Conventions that matter
 

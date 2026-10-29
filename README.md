@@ -1,6 +1,9 @@
-# TaskImporter
+# Super Palette
 
 A PowerToys Command Palette extension for capturing tasks into Super Productivity.
+
+Shown in the app as **Super Palette**; the code, projects and folders still use the
+original working name, TaskImporter.
 
 Talks directly to Super Productivity's Local REST API on `127.0.0.1:3876`. No
 Super Productivity plugin is involved.

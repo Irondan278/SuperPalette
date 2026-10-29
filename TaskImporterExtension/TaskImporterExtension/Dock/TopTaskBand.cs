@@ -48,7 +48,7 @@ internal sealed partial class TopTaskBand : IDisposable
 
         _status = new ListItem(currentTaskPage)
         {
-            Title = "TaskImporter",
+            Title = "Super Palette",
             Icon = Icons.Timer,
         };
 
@@ -169,7 +169,7 @@ internal sealed partial class TopTaskBand : IDisposable
     /// <summary>What was true at the last poll.</summary>
     private sealed record Snapshot(TaskDto? Task, bool Running, DateTimeOffset FetchedAt, string Message)
     {
-        public static Snapshot Waiting { get; } = new(null, false, default, "TaskImporter");
+        public static Snapshot Waiting { get; } = new(null, false, default, "Super Palette");
 
         public static Snapshot Empty { get; } = new(null, false, default, "Nothing on today");
 
