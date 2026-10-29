@@ -16,7 +16,7 @@ only; the API is off by default. Every response is
 
 ## Current state
 
-Built, compiled and tested (103 tests passing):
+Built, compiled and tested (106 tests passing):
 
 - `src/TaskImporter.Core` — quick-add parser, date and duration grammars,
   CF_HTML clipboard parsing, page-title extraction, the routing seam,
