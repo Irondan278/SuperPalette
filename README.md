@@ -73,7 +73,7 @@ it declares.
 To remove it again:
 
 ```powershell
-Get-AppxPackage *TaskImporterExtension* | Remove-AppxPackage
+Get-AppxPackage irondan.SuperPalette | Remove-AppxPackage
 ```
 
 ## Using it
@@ -94,7 +94,7 @@ in between.
 Settings — access token, API address, default project, and whether to fetch page
 titles — live on the extension's settings page. MSIX redirects them into the
 package's data folder,
-`%LOCALAPPDATA%\Packages\TaskImporterExtension_ajkqh9gttjjec\LocalCache\Local\TaskImporter`,
+`%LOCALAPPDATA%\Packages\irondan.SuperPalette_xf259y3a7ystp\LocalCache\Local\TaskImporter`,
 so rebuilding and re-registering keep the token but `Remove-AppxPackage`
 deletes it.
 

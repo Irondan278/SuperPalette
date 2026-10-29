@@ -9,16 +9,17 @@
   IgnorableNamespaces="uap uap3 rescap">
 
   <Identity
-    Name="TaskImporterExtension"
-    Publisher="CN=Danny Enns"
+    Name="irondan.SuperPalette"
+    Publisher="CN=B8ABD490-3553-417B-A912-72159E3023C4"
     Version="0.0.1.0" />
-  <!-- Publisher feeds the package family name (TaskImporterExtension_ajkqh9gttjjec),
-       which names the settings folder. Changing it orphans the saved token, and a
-       signing certificate's subject must match it exactly. -->
+  <!-- Name and Publisher are the Partner Center product identity for the Store
+       listing and must match it exactly. Together they make the package family
+       name, irondan.SuperPalette_xf259y3a7ystp, which names the settings folder.
+       Keep AppxPackageIdentityName/AppxPackagePublisher in the csproj in step. -->
 
   <Properties>
     <DisplayName>Super Palette</DisplayName>
-    <PublisherDisplayName>Danny Enns</PublisherDisplayName>
+    <PublisherDisplayName>irondan</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

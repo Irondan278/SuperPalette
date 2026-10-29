@@ -51,21 +51,22 @@ The two libraries stay outside that folder, so they do not inherit it.
   without being asked; do keep `ITaskRouter` intact.
 - **Shown as "Super Palette"**; the code keeps the name TaskImporter. Only
   display strings changed (manifest `DisplayName`/`Description`, the provider's
-  `DisplayName`, the dock band title). Leave the provider `Id`, the package
-  `Identity Name` and the `TaskImporter` settings folder name alone: changing
-  them loses the pinned band or the saved token, or registers a second package
-  with the same COM class.
+  `DisplayName`, the dock band title). Leave the provider `Id` and the
+  `TaskImporter` settings folder name alone: changing them loses the pinned
+  band or the saved token.
+- **Package identity is the Partner Center one** for the "Super Palette" Store
+  listing: `Name="irondan.SuperPalette"`,
+  `Publisher="CN=B8ABD490-3553-417B-A912-72159E3023C4"`, display publisher
+  `irondan`. It is set in both `Package.appxmanifest` and the csproj
+  (`AppxPackageIdentityName`, `AppxPackagePublisher`) and must match Partner
+  Center exactly, so never change it. The executable is still
+  `TaskImporterExtension.exe`.
 - **Settings live inside the package's data folder**, not plain
   `%LOCALAPPDATA%`: MSIX redirects it to
-  `%LOCALAPPDATA%\Packages\TaskImporterExtension_ajkqh9gttjjec\LocalCache\Local\TaskImporter`.
+  `%LOCALAPPDATA%\Packages\irondan.SuperPalette_xf259y3a7ystp\LocalCache\Local\TaskImporter`.
   Re-registering keeps them; `Remove-AppxPackage` deletes them, token included.
   Changing the manifest makes plain re-registration fail with 0x80073CFB, so
   either remove the package (and re-enter the token) or bump `Version`.
-- **Publisher is `CN=Danny Enns`**, which gives the `_ajkqh9gttjjec` suffix
-  above. Leave it alone: it is part of the package identity, so changing it
-  moves the settings folder and registers a second package with the same COM
-  class unless the old one is removed first. A signing certificate, when one
-  is needed, must carry exactly this subject.
 
 ## Conventions that matter
 
@@ -135,6 +136,21 @@ platforms it declares.
 1. Verify against a live instance — see "Known unknowns" below.
 2. Check the dock band in a live Dock: rendering, click behaviour, and
    whether `timeSpent` drifts against Super Productivity's own display.
+3. Ship to the Microsoft Store, then list it in the Command Palette Extension
+   Gallery (a PR to `microsoft/CmdPal-Extensions` pointing at the Store
+   listing). WinGet waits; if added later it is the unpackaged Inno Setup EXE
+   from Microsoft's docs (`LocalServer32`, not the template skill's
+   `InprocServer32`), and never alongside the Store build on one machine.
+   Before submitting:
+   - Make JSON source-generated. Release builds set `PublishTrimmed`, which
+     turns off reflection-based `System.Text.Json`, and `SuperProductivityClient`
+     uses it. Debug builds hide this.
+   - Prove `dotnet build -c Release -p:GenerateAppxPackageOnBuild=true
+     -p:AppxPackageSigningEnabled=false` yields an `.msix` with no Visual
+     Studio, for x64 and ARM64, then `makeappx bundle`. The Store signs it.
+   - Real icons (the Assets are template placeholders), a privacy policy URL,
+     a `runFullTrust` justification, and certification notes saying PowerToys
+     with Command Palette is required.
 
 ## Known unknowns
 

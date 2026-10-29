@@ -12,6 +12,11 @@
 
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <EnableMsixTooling>true</EnableMsixTooling>
+
+    <!-- Partner Center product identity; must match Package.appxmanifest. -->
+    <AppxPackageIdentityName>irondan.SuperPalette</AppxPackageIdentityName>
+    <AppxPackagePublisher>CN=B8ABD490-3553-417B-A912-72159E3023C4</AppxPackagePublisher>
+    <AppxPackageVersion>0.0.1.0</AppxPackageVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
