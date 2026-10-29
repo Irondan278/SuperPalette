@@ -52,9 +52,15 @@ The two libraries stay outside that folder, so they do not inherit it.
 - **Shown as "Super Palette"**; the code keeps the name TaskImporter. Only
   display strings changed (manifest `DisplayName`/`Description`, the provider's
   `DisplayName`, the dock band title). Leave the provider `Id`, the package
-  `Identity Name` and `%LOCALAPPDATA%\TaskImporter` alone: changing them loses
-  the pinned band or the saved token, or registers a second package with the
-  same COM class.
+  `Identity Name` and the `TaskImporter` settings folder name alone: changing
+  them loses the pinned band or the saved token, or registers a second package
+  with the same COM class.
+- **Settings live inside the package's data folder**, not plain
+  `%LOCALAPPDATA%`: MSIX redirects it to
+  `%LOCALAPPDATA%\Packages\TaskImporterExtension_8wekyb3d8bbwe\LocalCache\Local\TaskImporter`.
+  Re-registering keeps them; `Remove-AppxPackage` deletes them, token included.
+  Changing the manifest makes plain re-registration fail with 0x80073CFB, so
+  either remove the package (and re-enter the token) or bump `Version`.
 
 ## Conventions that matter
 
