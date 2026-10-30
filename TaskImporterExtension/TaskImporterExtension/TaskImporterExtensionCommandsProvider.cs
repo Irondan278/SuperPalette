@@ -26,7 +26,7 @@ public partial class TaskImporterExtensionCommandsProvider : CommandProvider
     {
         Id = "TaskImporter";
         DisplayName = "Super Palette";
-        Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
+        Icon = IconHelpers.FromRelativePath("Assets\\ExtensionIcon.png");
 
         // Exposing this is what gives the extension its settings page.
         Settings = _settings.Settings;

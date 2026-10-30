@@ -89,6 +89,11 @@ involved, but the Windows SDK 10.0.26100 must be installed for `makeappx`.
 Bump the version in both `Package.appxmanifest` and the csproj's
 `AppxPackageVersion` before each submission; the script refuses a mismatch.
 
+The icon's source is `TaskImporterExtension\branding\icon.png` (square, 1024px,
+transparent corners). Every logo in `Assets\` is generated from it; after
+changing it, run `.\TaskImporterExtension\make-assets.ps1` and commit the
+results.
+
 ## Using it
 
 Three commands appear in the palette:

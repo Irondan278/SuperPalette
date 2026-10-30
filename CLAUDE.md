@@ -147,7 +147,10 @@ platforms it declares.
   the `Microsoft.Windows.SDK.BuildTools` package reference: without it the MSIX
   targets look for makepri via `Platforms\UAP\<ver>\UAP.props`, which the
   standalone SDK installer does not provide, and packaging fails with
-  APPX3217. The `mspdbcmf.exe` warning only means no symbols package; upload
+  APPX3217. It also passes `AppxBundle=Never`: with scaled assets the tooling
+  otherwise splits them into resource packages and bundles each architecture
+  on its own, and bundles cannot be nested. The `mspdbcmf.exe` warning only
+  means no symbols package; upload
   the `.msixbundle`.
 - The extension project is not in the solution file. It builds by path.
 
@@ -164,9 +167,8 @@ platforms it declares.
    Before submitting:
    - Run the trimmed Release build against a live Super Productivity. Tests
      cover JSON with reflection off, but nothing has run the trimmed package.
-   - Real icons (the Assets are template placeholders), a `runFullTrust`
-     justification, and certification notes saying PowerToys
-     with Command Palette is required.
+   - A `runFullTrust` justification, and certification notes saying
+     PowerToys with Command Palette is required.
 
 ## Known unknowns
 

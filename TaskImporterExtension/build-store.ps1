@@ -45,9 +45,13 @@ if (Test-Path $OutDir) { Remove-Item -Recurse -Force $OutDir }
 $packages = foreach ($arch in 'x64', 'ARM64') {
     Write-Host "`n=== $arch ===" -ForegroundColor Cyan
     $archDir = Join-Path $OutDir $arch
+    # AppxBundle=Never: with scaled assets the tooling would otherwise split
+    # them into resource packages and wrap each architecture in its own
+    # bundle, and bundles cannot be nested. The one bundle is made below.
     dotnet build $project -c Release "-p:Platform=$arch" `
         -p:GenerateAppxPackageOnBuild=true `
         -p:AppxPackageSigningEnabled=false `
+        -p:AppxBundle=Never `
         "-p:AppxPackageDir=$archDir\" | Out-Host  # keep build output out of $packages
     if ($LASTEXITCODE -ne 0) { throw "Build failed for $arch." }
 
